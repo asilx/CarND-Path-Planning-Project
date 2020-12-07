@@ -100,7 +100,7 @@ I developed a state machine that consists of 7 states:
     This state changes to "Take the right lane"
     after our speed is similar with the medium-distance car
     
-(4) "Take the left lane"
+(6) "Take the left lane"
 
     This state persists until changing lane process is done!
     
@@ -125,7 +125,7 @@ I developed a state machine that consists of 7 states:
     This state changes to "Prepare to take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at left lane (distance < 22)
     
-(5) "Prepare to take the left lane"
+(7) "Prepare to take the left lane"
 
     This state persists until we have a similar speed with the medium distance car infront of us and the lane is free!
     
