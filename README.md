@@ -1,5 +1,71 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
+
+# Algorithm that is implemented by Asil Kaan Bozcuoglu in main.cpp
+
+I developed a state machine that consists of 6 states:
+
+(1) "Keep the lane with no speed change":
+
+    This state persists if there is no car that is infront and nearby (distance < 30)
+
+    This state changes to "Keep the lane with reducing speed"
+    if there is a car that is infront and nearby (distance < 30) and there exist nearby cars at other lanes (distance < 22)
+    
+    This state changes to "Keep the lane with increasing speed"
+    if there isn't any car that is infront and nearby (distance < 30) and our speed is less than the speed limit
+    
+    This state changes to "Take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Prepare to take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Prepare to take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+(2) "Keep the lane with reducing speed"":
+
+    This state persists if there is a car that is infront and nearby (distance < 30) and other lanes are busy
+    
+    This state changes to "Keep the lane with increasing speed"
+    if there isn't any car that is infront and nearby (distance < 30) and our speed is less than the speed limit
+    
+    This state changes to "Take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Prepare to take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Prepare to take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+
+(3) "Keep the lane with increasing speed"
+
+    This state persists if there is no car that is infront and nearby (distance < 30) and we are below the speed limit
+     
+    This state changes to "Keep the lane with reducing speed"
+    if there is a car that is infront and nearby (distance < 30) and there exist nearby cars at other lanes (distance < 22)
+    
+    This state changes to "Take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Prepare to take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+    This state changes to "Prepare to take the right lane"
+    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    
+(4)
    
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
