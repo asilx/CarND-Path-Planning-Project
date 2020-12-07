@@ -10,132 +10,157 @@ On top of that, I developed a state machine that consists of 7 states:
 (1) "Keep the lane with no speed change":
 
     This state persists if there is no car that is infront and nearby (distance < 30)
+    (L185:230@main.cpp)
 
     This state changes to "Keep the lane with reducing speed"
     if there is a car that is infront and nearby (distance < 30) and there exist nearby cars at other lanes (distance < 22)
+    (L224:227@main.cpp)
     
     This state changes to "Keep the lane with increasing speed"
     if there isn't any car that is infront and nearby (distance < 30) and our speed is less than the speed limit
+    (L229:230@main.cpp)
     
     This state changes to "Take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L217:221@main.cpp)
     
     This state changes to "Prepare to take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L212:216@main.cpp)
     
     This state changes to "Take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the left lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L202:206@main.cpp)
     
     This state changes to "Prepare to take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at left lane (distance < 22)
+    (L197:201@main.cpp)
     
 (2) "Keep the lane with reducing speed"":
 
     This state persists if there is a car that is infront and nearby (distance < 30) and other lanes are busy
+    (L224:227@main.cpp)
     
     This state changes to "Keep the lane with increasing speed"
     if there isn't any car that is infront and nearby (distance < 30) and our speed is less than the speed limit
+    (L229:230@main.cpp)
     
     This state changes to "Take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L217:221@main.cpp)
     
     This state changes to "Prepare to take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L212:216@main.cpp)
     
     This state changes to "Take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the left lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L202:206@main.cpp)
     
     This state changes to "Prepare to take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at left lane (distance < 22)
+    (L197:201@main.cpp)
 
 (3) "Keep the lane with increasing speed"
 
     This state persists if there is no car that is infront and nearby (distance < 30) and we are below the speed limit
+    (L229:230@main.cpp)
      
     This state changes to "Keep the lane with reducing speed"
     if there is a car that is infront and nearby (distance < 30) and there exist nearby cars at other lanes (distance < 22)
+    (L224:227@main.cpp)
     
     This state changes to "Take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L217:221@main.cpp)
     
     This state changes to "Prepare to take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L212:216@main.cpp)
     
     This state changes to "Take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the left lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L202:206@main.cpp)
     
     This state changes to "Prepare to take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at left lane (distance < 22)
+    (L197:201@main.cpp)
     
 (4) "Take the right lane"
 
     This state persists until changing lane process is done!
+    (L217:221@main.cpp)
     
     This state changes to "Keep the lane with no speed change"
-    if there is no car that is infront and nearby (distance < 30)
+    if there is no car that is infront and nearby (distance < 30) and the speed is 49.5
+    (L185:230@main.cpp)
     
     This state changes to "Keep the lane with reducing speed"
     if there is a car that is infront and nearby (distance < 30) and there exist nearby cars at other lanes (distance < 22)
+    (L224:227@main.cpp)
     
     This state changes to "Keep the lane with increasing speed"
     if there isn't any car that is infront and nearby (distance < 30) and our speed is less than the speed limit
-    
-    This state changes to "Take the right lane"
-    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
-    
-    This state changes to "Prepare to take the right lane"
-    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L229:230@main.cpp)
     
     This state changes to "Take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the left lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L202:206@main.cpp)
     
     This state changes to "Prepare to take the left lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at left lane (distance < 22)
+    (L197:201@main.cpp)
     
 (5) "Prepare to take the right lane"
 
     This state persists until we have a similar speed with the medium distance car infront of us and the lane is free!
+    (L212:216@main.cpp)
     
     This state changes to "Keep the lane with no speed change"
-    if there is new car which is nearby at the right lane
+    if there is a new car which is nearby at the right lane and the speed is 49.5
+    (L185:230@main.cpp)
     
     This state changes to "Take the right lane"
     after our speed is similar with the medium-distance car
+    (L217:221@main.cpp)
     
 (6) "Take the left lane"
 
     This state persists until changing lane process is done!
+    (L202:206@main.cpp)
     
     This state changes to "Keep the lane with no speed change"
-    if there is no car that is infront and nearby (distance < 30)
+    if there is no car that is infront and nearby (distance < 30) and the speed is 49.5
+    (L185:230@main.cpp)
     
     This state changes to "Keep the lane with reducing speed"
     if there is a car that is infront and nearby (distance < 30) and there exist nearby cars at other lanes (distance < 22)
+    (L224:227@main.cpp)
     
     This state changes to "Keep the lane with increasing speed"
     if there isn't any car that is infront and nearby (distance < 30) and our speed is less than the speed limit
+    (L229:230@main.cpp)
     
     This state changes to "Take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the right lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
+    (L217:221@main.cpp)
     
     This state changes to "Prepare to take the right lane"
     if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at right lane (distance < 22)
-    
-    This state changes to "Take the left lane"
-    if there is a car that is infront and nearby (distance < 30) and there exists no nearby car at the left lane or medium distance car (with slow speed at the front) at right lane (distance < 22)
-    
-    This state changes to "Prepare to take the left lane"
-    if there is a car that is infront and nearby (distance < 30) and there exists only a medium distance car (with slow speed at the front) at left lane (distance < 22)
+    (L212:216@main.cpp)
     
 (7) "Prepare to take the left lane"
 
     This state persists until we have a similar speed with the medium distance car infront of us and the lane is free!
+    (L197:201@main.cpp)
     
     This state changes to "Keep the lane with no speed change"
-    if there is new car which is nearby at the left lane
+    if there is a new car which is nearby at the left lane and the speed is 49.5
+    (L185:230@main.cpp)
     
     This state changes to "Take the left lane"
-    after our speed is similar with the medium-distance car    
+    after our speed is similar with the medium-distance car
+    (L202:206@main.cpp)
    
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
