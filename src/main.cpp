@@ -7,6 +7,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "helpers.h"
 #include "json.hpp"
+#include "spline.h"
 
 // for convenience
 using nlohmann::json;
@@ -22,7 +23,11 @@ int main() {
   vector<double> map_waypoints_s;
   vector<double> map_waypoints_dx;
   vector<double> map_waypoints_dy;
-
+  
+  int lane = 1;
+  int desired_lane = lane;
+  double ref_vel = 0;
+  bool prepare_lane_change = false;
   // Waypoint map to read from
   string map_file_ = "../data/highway_map.csv";
   // The max s value before wrapping around the track back to 0
@@ -49,9 +54,11 @@ int main() {
     map_waypoints_dx.push_back(d_x);
     map_waypoints_dy.push_back(d_y);
   }
+  
+  
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy]
+               &map_waypoints_dx,&map_waypoints_dy, &ref_vel, &lane, &desired_lane, &prepare_lane_change]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -97,8 +104,213 @@ int main() {
            * TODO: define a path made up of (x,y) points that the car will visit
            *   sequentially every .02 seconds
            */
-
-
+          int prev_size = previous_path_x.size();
+          
+          if(prev_size > 2)
+          {
+            car_s = end_path_s;
+          }
+          
+          float proximity[3];
+          proximity[0] = 999;
+          proximity[1] = 999;
+          proximity[2] = 999;
+          
+          bool proximity_alert[3];
+          
+          proximity_alert[0] = false;
+          proximity_alert[1] = false;
+          proximity_alert[2] = false;
+          
+          bool infront[3];
+          infront[0] = false;
+          infront[1] = false;
+          infront[2] = false;
+          
+          float lane_speed[3];
+          
+          lane_speed[0] = -1;
+          lane_speed[1] = -1;
+          lane_speed[2] = -1;
+          
+          float lane_dist[3];
+          
+          lane_dist[0] = -1;
+          lane_dist[1] = -1;
+          lane_dist[2] = -1;
+          
+          for(int i = 0; i < sensor_fusion.size(); i++)
+          {
+            float d = sensor_fusion[i][6];
+            //if(d < 4*lane + 4 && d > 4 * lane)
+            //{
+            float sx = sensor_fusion[i][5];
+              
+            float vx = sensor_fusion[i][3];
+            float vy = sensor_fusion[i][4];
+              
+            float v = sqrt(vx * vx + vy * vy);
+              
+              
+            sx += ((double) prev_size * 0.02 * v);
+            
+            if(proximity[(int)d/4] > abs(sx - car_s))
+            {
+              proximity[(int)d/4] = abs(sx - car_s);
+              
+              if(proximity[(int)d/4] < 22 && (int)d/4 != lane)
+              {
+                proximity_alert[(int)d/4] = true;
+              
+                if(sx > car_s) 
+                   infront[(int)d/4] = true; 
+              }
+              else if(proximity[(int)d/4] < 30 && (int)d/4 == lane)
+              {
+                proximity_alert[(int)d/4] = true;
+              
+                if(sx > car_s) 
+                  infront[(int)d/4] = true; 
+              }
+            }
+            
+            if (lane_dist[(int)d/4] == -1 || lane_dist[(int)d/4] > abs(sx - car_s))
+            {
+              lane_dist[(int)d/4] = abs(sx - car_s);
+              lane_speed[(int)d/4] = v;
+            }
+            
+          }
+          
+          if (prepare_lane_change)
+          {
+            if (ref_vel <= lane_speed[desired_lane])
+            {
+              prepare_lane_change = false;
+            }
+            ref_vel -= .224;
+          }
+          else if (proximity_alert[lane] && infront[lane])
+          {
+            if (lane + 1 < 3 && !proximity_alert[lane + 1])
+            {
+              if(proximity[lane + 1] < 50 && abs(proximity[lane + 1] - proximity[lane]) > 10 && infront[lane + 1] && ref_vel > lane_speed[lane + 1 ])
+              {
+                prepare_lane_change = true;
+                desired_lane = lane + 1;
+              }
+              else if (abs(proximity[lane + 1] - proximity[lane]) > 10  || !infront[lane + 1] && ref_vel > lane_speed[lane + 1] )
+              {
+                prepare_lane_change = false;
+                desired_lane = lane + 1;
+              }
+              ref_vel -= .224;
+              
+            }
+            else if(lane -1 >= 0 && !proximity_alert[lane - 1])
+            {
+              if(proximity[lane - 1] < 50 && abs(proximity[lane - 1] - proximity[lane]) > 10 && infront[lane - 1] && ref_vel > lane_speed[lane - 1])
+              {
+                prepare_lane_change = true;
+                desired_lane = lane-1;
+              }
+              else if (abs(proximity[lane - 1] - proximity[lane]) > 10 || !infront[lane - 1] && ref_vel > lane_speed[lane - 1] )
+              {
+                prepare_lane_change = false;
+                desired_lane = lane-1;
+              }
+              ref_vel -= .224;
+            }
+            else if (proximity[lane] < 10) //emergency break
+              ref_vel = lane_speed[lane];
+            else
+              ref_vel -= .224;
+          }
+          else if (ref_vel < 49.5)
+            ref_vel += .224;
+          
+          vector<double> spline_pts_x;
+          vector<double> spline_pts_y;
+          
+          double ref_x = car_x;
+          double ref_y = car_y;
+          double ref_yaw = deg2rad(car_yaw);
+          
+          vector<double> trajpoint1 = getXY(car_s + 30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<double> trajpoint2 = getXY(car_s + 60, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<double> trajpoint3 = getXY(car_s + 90, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          
+          double prevx = car_x - cos(car_yaw);
+          double prevy = car_y - sin(car_yaw);
+          
+          if(prev_size >= 2)
+          {
+            ref_x = previous_path_x[prev_size - 1];
+            ref_y = previous_path_y[prev_size - 1];
+            
+            prevx = previous_path_x[prev_size - 2];
+            prevy = previous_path_y[prev_size - 2];
+            ref_yaw = atan2(ref_y - prevy, ref_x - prevx);
+          }
+          
+          spline_pts_x.push_back(prevx);
+          spline_pts_y.push_back(prevy);
+          spline_pts_x.push_back(ref_x);
+          spline_pts_y.push_back(ref_y);
+          spline_pts_x.push_back(trajpoint1[0]);
+          spline_pts_y.push_back(trajpoint1[1]);
+          spline_pts_x.push_back(trajpoint2[0]);
+          spline_pts_y.push_back(trajpoint2[1]);
+          spline_pts_x.push_back(trajpoint3[0]);
+          spline_pts_y.push_back(trajpoint3[1]); 
+          
+          
+          for(int i = 0; i < spline_pts_x.size(); i++)
+          {
+            double transform_x = spline_pts_x[i] - ref_x;
+            double transform_y = spline_pts_y[i] - ref_y;
+            
+            spline_pts_x[i] = (transform_x * cos(-1 * ref_yaw)) - (transform_y * sin(-1 * ref_yaw));
+            spline_pts_y[i] = (transform_x * sin(-1 * ref_yaw)) + (transform_y * cos(-1 * ref_yaw));
+          }
+          
+          tk::spline s;
+          s.set_points(spline_pts_x, spline_pts_y);
+          
+          for(int i = 0; i < previous_path_x.size(); i++)
+          {
+            next_x_vals.push_back(previous_path_x[i]);
+            next_y_vals.push_back(previous_path_y[i]);
+          }
+          
+          double target_x = 30.0;
+          double target_y = s(target_x);
+          double target_dist = sqrt((target_x*target_x) + (target_y*target_y));
+          
+          double N = (target_dist/(0.02*ref_vel/2.24));
+          double milestone_dist = target_x / N;
+          
+          for(int i = 0; i <= 50 - previous_path_x.size(); i++)
+          {
+            double x_point = (i+1) * milestone_dist;
+            double y_point = s(x_point);
+           
+            
+            double x_temp = x_point;
+            double y_temp = y_point;
+            
+            x_point = (x_temp * cos(ref_yaw) - y_temp*sin(ref_yaw));
+            y_point = (x_temp * sin(ref_yaw) + y_temp*cos(ref_yaw));
+            
+            x_point += ref_x;
+            y_point += ref_y;
+            
+            next_x_vals.push_back(x_point);
+            next_y_vals.push_back(y_point);
+          }
+          
+          if(!prepare_lane_change)
+            lane = desired_lane;
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
 
