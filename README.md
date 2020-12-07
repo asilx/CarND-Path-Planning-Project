@@ -2,8 +2,10 @@
 Self-Driving Car Engineer Nanodegree Program
 
 # Algorithm that is implemented by me in main.cpp
+My code is based on the code presented at the Q&A session at the beginning of the project
 
-I developed a state machine that consists of 7 states:
+
+On top of that, I developed a state machine that consists of 7 states:
 
 (1) "Keep the lane with no speed change":
 
