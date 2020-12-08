@@ -133,12 +133,6 @@ int main() {
           lane_speed[1] = -1;
           lane_speed[2] = -1;
           
-          float lane_dist[3];
-          
-          lane_dist[0] = -1;
-          lane_dist[1] = -1;
-          lane_dist[2] = -1;
-          
           for(int i = 0; i < sensor_fusion.size(); i++)
           {
             float d = sensor_fusion[i][6];
@@ -156,6 +150,7 @@ int main() {
             
             if(proximity[(int)d/4] > abs(sx - car_s))
             {
+              lane_speed[(int)d/4] = v;
               proximity[(int)d/4] = abs(sx - car_s);
               
               if(proximity[(int)d/4] < 22 && (int)d/4 != lane)
@@ -172,12 +167,6 @@ int main() {
                 if(sx > car_s) 
                   infront[(int)d/4] = true; 
               }
-            }
-            
-            if (lane_dist[(int)d/4] == -1 || lane_dist[(int)d/4] > abs(sx - car_s))
-            {
-              lane_dist[(int)d/4] = abs(sx - car_s);
-              lane_speed[(int)d/4] = v;
             }
             
           }
