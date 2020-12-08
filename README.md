@@ -38,9 +38,9 @@ At second, I check the values registered in aforementioned (L174:219@main.cpp):
     
     else if the proximity alert is set for the current lane and this car is at front (L182:217@main.cpp)
      then check if left lane is available, set this lane as desired one (L182:198@main.cpp)
-     then check if there exist a medium-distance car with slower speeds at front at the left lane, set prepare_lane_change (L186:195@main.cpp)
+     then check if there exist a medium-distance car (dist < 50) with slower speeds at front at the left lane, set prepare_lane_change (L186:195@main.cpp)
      else if right lane is available, set this lane as desired one (L199:217@main.cpp)
-     then check if there exist a medium-distance car with slow speed at front at the right lane, set prepare_lane_change (L201:210@main.cpp)
+     then check if there exist a medium-distance car (dist < 50) with slow speed at front at the right lane, set prepare_lane_change (L201:210@main.cpp)
      else if the car at front is dangerously close (distance is <10), make emergency break (L213:214@main.cpp)
      else slow down the car  (L215:216@main.cpp)
      
