@@ -19,6 +19,8 @@ lane_speed: float array, keeps the speed of closest car foe each lane (L114:117@
 
 prepare_lane_change: bool, if before changing the lane, speed should be decreased or not (L30@main.cpp)
 
+ps: lane_dist variable was a duplicate of proximity. And it is removed in the latest revision.
+
 At first, I check all sensor fusion readings (L136:172@main.cpp) :
 
     if a new distance reading for a particular lane is than previous reading (L151@main.cpp)
@@ -36,14 +38,25 @@ At second, I check the values registered in aforementioned (L174:219@main.cpp):
     
     else if the proximity alert is set for the current lane and this car is at front (L182:217@main.cpp)
      then check if left lane is available, set this lane as desired one (L182:198@main.cpp)
-     then check if there exist a medium-distance car with slow speed at front at the left lane, set prepare_lane_change (L186:195@main.cpp)
+     then check if there exist a medium-distance car with slower speeds at front at the left lane, set prepare_lane_change (L186:195@main.cpp)
      else if right lane is available, set this lane as desired one (L199:217@main.cpp)
      then check if there exist a medium-distance car with slow speed at front at the right lane, set prepare_lane_change (L201:210@main.cpp)
-     else if the car at front is dangerously close, make emergency break (L213:214@main.cpp)
+     else if the car at front is dangerously close (distance is <10), make emergency break (L213:214@main.cpp)
      else slow down the car  (L215:216@main.cpp)
      
     else if the speed is relatively slow than the limit, speed up the car (L218:219@main.cpp)
+    
+Availabilty rules for the statements such as:
 
+     then check if left lane is available
+     then check if right lane is available
+are following:
+
+    The distance to the car infront at desired lane is significantly greater than the distance to the car infront at current lane
+    
+    or
+    
+    the nearby car at desired lane is behind us (!infront) and we are faster than this car (ref_vel > lane_speed)
    
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
