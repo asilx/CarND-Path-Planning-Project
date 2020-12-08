@@ -41,7 +41,7 @@ At second, I check the values registered in aforementioned (L174:219@main.cpp):
      then check if there exist a medium-distance car (dist < 50) with slower speeds at front at the left lane, set prepare_lane_change (L186:195@main.cpp)
      else if right lane is available, set this lane as desired one (L199:217@main.cpp)
      then check if there exist a medium-distance car (dist < 50) with slow speed at front at the right lane, set prepare_lane_change (L201:210@main.cpp)
-     else if the car at front is dangerously close (dist is <10), make emergency break (L213:214@main.cpp)
+     else if the car at front is dangerously close (dist <10), make emergency break (L213:214@main.cpp)
      else slow down the car  (L215:216@main.cpp)
      
     else if the speed is relatively slow than the limit, speed up the car (L218:219@main.cpp)
